@@ -1,155 +1,164 @@
 <!doctype html>
-<html lang="fr"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0a6f7a">
-<title>CHALLENGE ISLAND</title>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#101a2b">
+<title>Challenge Island — Battle Royale</title>
 <style>
-:root{--bg:#e6fbf6;--card:#fff;--tx:#073b4c;--mut:#4d7f89;--lag:#0fb5a6;--deep:#0a6f7a;--pink:#ff4f8b;--sun:#ffc93c;--ok:#12a36b;--ko:#e5484d;--bd:#b9e8df;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#04262e;--card:#0a3d49;--tx:#e9fffb;--mut:#93cbd0;--bd:#14606c;color-scheme:dark}}
-*{box-sizing:border-box}html,body{margin:0}
-body{background:var(--bg);color:var(--tx);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
-#app{max-width:480px;margin:0 auto;padding:0 16px 96px}
-h1,h2,h3{font-family:"Baloo 2",system-ui,sans-serif;margin:0;line-height:1.1}
-.hero{margin:0 -16px 16px;padding:28px 20px 40px;background:linear-gradient(180deg,#ffb347,#ff4f8b 55%,#0fb5a6);color:#fff;position:relative;overflow:hidden;border-radius:0 0 28px 28px}
-.hero h1{font-size:34px;font-weight:800;text-shadow:0 2px 0 rgba(0,0,0,.15)}
-.hero p{margin:6px 0 0;opacity:.95}
-.sun{position:absolute;right:-20px;top:-20px;width:110px;height:110px;border-radius:50%;background:var(--sun);animation:glow 4s ease-in-out infinite}
-@keyframes glow{50%{transform:scale(1.08);box-shadow:0 0 40px #ffe08a}}
-.wave{position:absolute;left:0;bottom:-2px;width:200%;height:22px;animation:wv 7s linear infinite}
-@keyframes wv{to{transform:translateX(-50%)}}
-.card{background:var(--card);border:2px solid var(--bd);border-radius:20px;padding:16px;margin:12px 0;animation:pop .25s ease-out}
-@keyframes pop{from{transform:scale(.97);opacity:0}}
-.bar{height:12px;border-radius:9px;background:var(--bd);overflow:hidden;margin:8px 0}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--sun),var(--pink));transition:width .5s}
-.btn{display:block;width:100%;border:0;border-radius:16px;padding:14px;margin:10px 0;font:700 17px "Baloo 2",system-ui,sans-serif;background:var(--deep);color:#fff;cursor:pointer;transition:transform .12s}
-.btn:active{transform:scale(.97)}.btn.big{background:var(--pink);font-size:20px;padding:18px}
-.btn.alt{background:var(--card);color:var(--tx);border:2px solid var(--bd)}
-.btn:disabled{opacity:.5}
-.opt{display:block;width:100%;text-align:left;border:2px solid var(--bd);background:var(--card);color:var(--tx);border-radius:14px;padding:13px 14px;margin:8px 0;font:inherit;cursor:pointer}
-.opt.ok{background:var(--ok);border-color:var(--ok);color:#fff;animation:pop .3s}
-.opt.ko{background:var(--ko);border-color:var(--ko);color:#fff;animation:shake .3s}
-@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.row{display:flex;gap:8px}.row>*{flex:1}
-.chip{border:2px solid var(--bd);background:var(--card);color:var(--tx);border-radius:14px;padding:10px 6px;font:600 14px inherit;cursor:pointer;text-align:center}
-.chip.on{background:var(--lag);border-color:var(--lag);color:#fff}
-.chip:disabled{opacity:.45}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.badge{text-align:center;padding:12px 8px;border-radius:16px;border:2px solid var(--bd);background:var(--card)}
-.badge b{font-size:34px;display:block}.badge.off{filter:grayscale(1);opacity:.45}
-small,.mut{color:var(--mut)}
-nav{position:fixed;left:0;right:0;bottom:0;display:flex;justify-content:center;background:var(--card);border-top:2px solid var(--bd);padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px))}
-nav div{display:flex;max-width:480px;width:100%}
-nav button{flex:1;border:0;background:none;color:var(--mut);font:600 12px system-ui;padding:6px;cursor:pointer}
-nav button b{display:block;font-size:22px}nav button.on{color:var(--pink)}
-.big-n{font:800 44px "Baloo 2",system-ui}
-input{width:100%;padding:12px;margin:6px 0;border:2px solid var(--bd);border-radius:12px;background:var(--bg);color:var(--tx);font:inherit}
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style></head><body><div id="app"></div>
-<nav><div id="nav"></div></nav>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script>
-// [catégorie, difficulté 1-3, question, réponses, index bonne réponse]
-const Q=[
-['r',1,"Quel est le chef-lieu de La Réunion ?",["Saint-Pierre","Saint-Denis","Le Port","Saint-Paul"],1],
-['r',1,"Comment s’appelle le volcan actif de l’île ?",["Piton des Neiges","Piton de la Fournaise","Grand Bénare","Maïdo"],1],
-['r',1,"Quel fruit rouge est une star de l’île en décembre ?",["Le letchi","La pomme","La cerise","La fraise"],0],
-['r',1,"Quel plat se prépare avec des saucisses et des tomates ?",["Le rougail saucisse","La paella","Le couscous","La raclette"],0],
-['r',2,"Combien de cirques compte l’île ?",["2","3","4","5"],1],
-['r',2,"Quel est le point culminant de La Réunion ?",["Piton des Neiges","Piton de la Fournaise","Cilaos","Maïdo"],0],
-['r',2,"La Réunion fait partie de l’archipel des…",["Comores","Seychelles","Mascareignes","Maldives"],2],
-['r',3,"Quelle fête, le 20 décembre, commémore l’abolition de l’esclavage (1848) ?",["Fèt Kaf","Dipavali","Fête des fleurs","Carnaval"],0],
-['c',1,"Quelle est la capitale de l’Australie ?",["Sydney","Melbourne","Canberra","Perth"],2],
-['c',1,"Quelle planète est surnommée la planète rouge ?",["Vénus","Mars","Jupiter","Mercure"],1],
-['c',1,"Qui a peint la Joconde ?",["Van Gogh","Picasso","Léonard de Vinci","Monet"],2],
-['c',1,"Combien y a-t-il de continents ?",["5","6","7","8"],2],
-['c',2,"Quel est le plus grand océan du monde ?",["Atlantique","Indien","Arctique","Pacifique"],3],
-['c',2,"Qui a écrit « Les Misérables » ?",["Victor Hugo","Émile Zola","Molière","Balzac"],0],
-['c',2,"En quelle année la France a-t-elle gagné la Coupe du monde pour la 2ᵉ fois ?",["1998","2006","2018","2022"],2],
-['c',3,"Quel est le symbole chimique de l’or ?",["Or","Ag","Au","Go"],2],
-['l',1,"Suite : 2, 4, 8, 16, ?",["24","32","30","20"],1],
-['l',1,"Suite : 10, 20, 30, ?, 50",["35","40","45","25"],1],
-['l',1,"Un panier contient 6 œufs. Tu en prends 4. Combien en as-tu ?",["2","4","6","10"],1],
-['l',2,"Suite : 1, 1, 2, 3, 5, 8, ?",["11","12","13","14"],2],
-['l',2,"Combien de mois de l’année ont 28 jours ?",["1","2","6","12"],3],
-['l',2,"Suite : 3, 6, 12, 24, ?",["36","48","30","42"],1],
-['l',3,"3 machines font 3 pièces en 3 minutes. Combien de temps pour 100 machines et 100 pièces ?",["3 minutes","100 minutes","33 minutes","1 minute"],0],
-['l',3,"Suite : 2, 3, 5, 7, 11, ?",["12","13","15","14"],1]];
-const CATS={r:["🌋","La Réunion"],c:["🌍","Culture générale"],l:["🧩","Logique"]};
-const DN=["","Facile","Moyen","Difficile"];
-const B=[["first","🌴","Premier pas","Terminer une partie",s=>s.played>=1],["isl","🌋","Insulaire","10 bonnes réponses sur La Réunion",s=>s.cat.r>=10],["perf","🎯","Sans faute","Réussir un 5/5",s=>s.perfect>=1],["day","☀️","Défi relevé","Terminer un défi du jour",s=>!!s.daily],["str","🔥","Régulier","Jouer 3 jours d’affilée",s=>s.streak>=3],["l5","👑","Roi de l’île","Atteindre le niveau 5",s=>lvl()>=5]];
-let S={xp:0,pts:0,played:0,good:0,total:0,perfect:0,seen:[],cat:{r:0,c:0,l:0},streak:0,last:"",daily:"",badges:[]};
-try{Object.assign(S,JSON.parse(localStorage.getItem("ci")||"{}"))}catch(e){}
-const save=()=>{try{localStorage.setItem("ci",JSON.stringify(S))}catch(e){}};
-const lvl=()=>Math.floor(S.xp/100)+1;
-const day=(o=0)=>new Date(Date.now()-o*864e5).toISOString().slice(0,10);
-const $=id=>document.getElementById(id);
-let v="home",G=null,P={cat:"r",d:1},rs=false,RP="week",RK=null,U=null,PS="",sb=null;
-const SB_URL="https://bfjcsjxhssqtsasofhvi.supabase.co",SB_KEY="sb_publishable_lOgwL7hs6_RRUYZ1K8xboA_V3Vppk88";
-try{sb=window.supabase.createClient(SB_URL,SB_KEY)}catch(e){}
-const esc=s=>String(s).replace(/[&<>"']/g,c=>"&#"+c.charCodeAt(0)+";");
-const say=m=>{const x=$("msg");if(x)x.textContent=m};
-async function loadU(){if(!sb)return;try{const{data}=await sb.auth.getSession();U=data.session?data.session.user:null;PS=U?(U.user_metadata.pseudo||""):"";render()}catch(e){}}
-async function sign(up){const e=$("em").value.trim(),p=$("pw").value,n=$("ps").value.trim();
- if(!e||p.length<8)return say("E-mail et mot de passe (8 caractères min.) requis.");
- if(up&&(n.length<3||n.length>20))return say("Pseudo : 3 à 20 caractères.");
- say("Un instant…");
- const r=up?await sb.auth.signUp({email:e,password:p,options:{data:{pseudo:n}}}):await sb.auth.signInWithPassword({email:e,password:p});
- if(r.error)return say(/database/i.test(r.error.message)?"Ce pseudo est déjà pris.":r.error.message);
- if(up&&!r.data.session)return say("Compte créé. Confirme ton e-mail, puis connecte-toi.");
- loadU()}
-async function out(){await sb.auth.signOut();loadU()}
-async function loadRank(p){RK=null;render();try{const{data,error}=await sb.rpc("classement",{periode:p});RK=error?[]:data}catch(e){RK=[]}render()}
-const acct=()=>!sb?"":U?`<div class="card"><h3>👤 ${esc(PS||"Joueur")}</h3><small>${esc(U.email)}</small><button class="btn alt" onclick="out()">Se déconnecter</button></div>`:`<div class="card"><h3>Connexion</h3><small>Pour apparaître au classement.</small><input id="ps" placeholder="Pseudo (inscription seulement)" maxlength="20"><input id="em" type="email" placeholder="E-mail" autocomplete="email"><input id="pw" type="password" placeholder="Mot de passe (8 caractères min.)" autocomplete="current-password"><button class="btn" onclick="sign(1)">Créer mon compte</button><button class="btn alt" onclick="sign(0)">Me connecter</button><p id="msg" class="mut"></p></div>`;
-function rng(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
-function seed(s){let h=0;for(const c of s)h=Math.imul(31,h)+c.charCodeAt(0)|0;return h}
-function mk(i){const q=Q[i];return{id:i,cat:q[0],d:q[1],q:q[2],o:q[3].map((t,k)=>({t,ok:k===q[4]})).sort(()=>Math.random()-.5)}}
-function start(mode){
-  let ids;
-  if(mode==="d"){const r=rng(seed(day()));ids=Q.map((_,i)=>i).sort((a,b)=>r()-.5).slice(0,5)}
-  else{ids=Q.map((_,i)=>i).filter(i=>Q[i][0]===P.cat).map(i=>({i,k:(Q[i][1]===P.d?0:10)+(S.seen.includes(i)?5:0)+Math.random()*4})).sort((a,b)=>a.k-b.k).slice(0,5).map(x=>x.i)}
-  G={mode,qs:ids.map(mk),i:0,ok:0,pts:0,pick:null,nb:[]};go("quiz")}
-function answer(k){if(G.pick!==null)return;G.pick=k;const q=G.qs[G.i];if(q.o[k].ok){G.ok++;G.pts+=10*q.d;S.cat[q.cat]++}render()}
-function next(){if(G.i>=4)return finish();G.i++;G.pick=null;render()}
-function finish(){
-  let xp=G.ok*10+(G.ok===5?20:0),pts=G.pts;
-  if(G.mode==="d"&&S.daily!==day()){pts*=2;xp+=20;S.daily=day()}
-  G.xp=xp;G.gain=pts;S.xp+=xp;S.pts+=pts;S.played++;S.good+=G.ok;S.total+=5;if(G.ok===5)S.perfect++;
-  G.qs.forEach(q=>{if(!S.seen.includes(q.id))S.seen.push(q.id)});
-  if(S.last!==day()){S.streak=S.last===day(1)?S.streak+1:1;S.last=day()}
-  B.forEach(b=>{if(!S.badges.includes(b[0])&&b[4](S)){S.badges.push(b[0]);G.nb.push(b)}});
-  save();if(U&&sb&&G.gain>0)sb.from("scores").insert({pts:G.gain}).then(()=>{});go("end")}
-function go(x){v=x;rs=false;if(x==="rank")loadRank(RP);else render();scrollTo(0,0)}
-function reset(){if(!rs){rs=true;render();return}localStorage.removeItem("ci");location.reload()}
-function render(){
-  const T=[["home","🏝️","Accueil"],["pick","🎮","Jouer"],["rank","🏆","Top"],["badges","🏅","Badges"],["stats","👤","Moi"]];
-  $("nav").innerHTML=T.map(t=>`<button class="${v===t[0]||(v==="quiz"||v==="end")&&t[0]==="pick"?"on":""}" onclick="go('${t[0]}')"><b>${t[1]}</b>${t[2]}</button>`).join("");
-  let h="";
-  const hero=(t,s)=>`<div class="hero"><div class="sun"></div><h1>${t}</h1><p>${s}</p><svg class="wave" viewBox="0 0 800 22" preserveAspectRatio="none"><path d="M0 11Q50 0 100 11T200 11T300 11T400 11T500 11T600 11T700 11T800 11V22H0Z" fill="var(--bg)"/></svg></div>`;
-  if(v==="home"){const d=S.daily===day();
-    h=hero("CHALLENGE ISLAND","Relève les défis de l’île !")+`<div class="card"><h3>Niveau ${lvl()}</h3><div class="bar"><i style="width:${S.xp%100}%"></i></div><small>${S.xp%100}/100 XP · ${S.pts} points · 🔥 ${S.streak} jour${S.streak>1?"s":""} d’affilée</small></div>
-    <button class="btn big" onclick="start('d')">☀️ ${d?"Rejouer le défi du jour":"Défi du jour (points ×2)"}</button>
-    <button class="btn" onclick="go('pick')">🎮 Choisir un quiz</button>
-    <p class="mut" style="text-align:center"><small>Les points sont virtuels et ne donnent droit à aucun gain.</small></p>`}
-  if(v==="pick"){
-    h=hero("Jouer","5 questions par partie")+`<div class="card"><h3>Thème</h3><div class="row" style="margin-top:10px">${Object.keys(CATS).map(k=>`<button class="chip ${P.cat===k?"on":""}" onclick="P.cat='${k}';render()">${CATS[k][0]}<br>${CATS[k][1]}</button>`).join("")}</div></div>
-    <div class="card"><h3>Difficulté</h3><div class="row" style="margin-top:10px">${[1,2,3].map(d=>`<button class="chip ${P.d===d?"on":""}" ${lvl()<d?"disabled":""} onclick="P.d=${d};render()">${lvl()<d?"🔒 ":""}${DN[d]}${lvl()<d?`<br><small>Niveau ${d}</small>`:""}</button>`).join("")}</div></div>
-    <button class="btn big" onclick="start('q')">C’est parti !</button>`}
-  if(v==="quiz"){const q=G.qs[G.i];
-    h=`<div style="padding-top:16px"><small>${CATS[q.cat][0]} ${CATS[q.cat][1]} · ${DN[q.d]} · ${G.i+1}/5</small><div class="bar"><i style="width:${(G.i+(G.pick!==null))*20}%"></i></div></div><div class="card"><h2 style="font-size:22px">${q.q}</h2></div>`+
-    q.o.map((o,k)=>`<button class="opt ${G.pick!==null?(o.ok?"ok":G.pick===k?"ko":""):""}" ${G.pick!==null?"disabled":""} onclick="answer(${k})">${o.t}</button>`).join("")+
-    (G.pick!==null?`<button class="btn big" onclick="next()">${G.i>=4?"Voir mon résultat":"Question suivante"}</button>`:"")}
-  if(v==="end"){
-    h=hero(G.ok>=4?"Bravo !":G.ok>=2?"Bien joué !":"Continue !",`${G.ok} bonne${G.ok>1?"s":""} réponse${G.ok>1?"s":""} sur 5`)+`<div class="card" style="text-align:center"><div class="big-n">+${G.gain} pts</div><p>+${G.xp} XP${G.mode==="d"?" (bonus défi du jour inclus)":""}</p></div>`+
-    G.nb.map(b=>`<div class="card" style="text-align:center"><b style="font-size:40px">${b[1]}</b><h3>Nouveau badge : ${b[2]}</h3><small>${b[3]}</small></div>`).join("")+
-    `<button class="btn big" onclick="go('pick')">Rejouer</button><button class="btn alt" onclick="go('home')">Retour à l’accueil</button>`}
-  if(v==="rank"){h=hero("Classement","Les meilleurs de l’île")+`<div class="row"><button class="chip ${RP==="week"?"on":""}" onclick="RP='week';loadRank('week')">Cette semaine</button><button class="chip ${RP==="general"?"on":""}" onclick="RP='general';loadRank('general')">Général</button></div>`+(!sb?`<div class="card">Connexion en ligne indisponible.</div>`:RK===null?`<div class="card">Chargement…</div>`:RK.length?RK.map((r,i)=>`<div class="card row" style="align-items:center"><b style="flex:0 0 36px">${["🥇","🥈","🥉"][i]||i+1}</b><span style="flex:3">${esc(r.pseudo)}</span><b style="flex:1;text-align:right">${r.pts}</b></div>`).join(""):`<div class="card">Aucun score pour l’instant. Crée un compte dans l’onglet Moi, puis joue !</div>`)}
-  if(v==="badges"){
-    h=hero("Badges",`${S.badges.length}/${B.length} débloqués`)+`<div class="grid">${B.map(b=>`<div class="badge ${S.badges.includes(b[0])?"":"off"}"><b>${b[1]}</b><h3 style="font-size:17px">${b[2]}</h3><small>${b[3]}</small></div>`).join("")}</div>`}
-  if(v==="stats"){const p=S.total?Math.round(S.good/S.total*100):0;
-    h=hero("Mon espace","Compte et progression")+acct()+`<div class="card"><div class="row"><div><div class="big-n">${S.played}</div><small>parties</small></div><div><div class="big-n">${p}%</div><small>de réussite</small></div></div></div>
-    <div class="card"><h3>Bonnes réponses</h3><p>🌋 La Réunion : <b>${S.cat.r}</b><br>🌍 Culture générale : <b>${S.cat.c}</b><br>🧩 Logique : <b>${S.cat.l}</b></p><small>${S.seen.length}/${Q.length} questions déjà vues · ${S.perfect} partie${S.perfect>1?"s":""} parfaite${S.perfect>1?"s":""} · ${S.xp} XP</small></div>
-    <button class="btn alt" onclick="reset()">${rs?"Confirmer : tout effacer":"Effacer ma progression"}</button>`}
-  $("app").innerHTML=h}
-render();loadU();
-</script></body></html>
+  *{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101a2b;color:white;font-family:system-ui,-apple-system,Segoe UI,sans-serif;touch-action:none}
+  #game{position:fixed;inset:0} canvas{display:block}
+  #hud{position:fixed;inset:0;pointer-events:none}
+  .panel{background:#101a2bd9;border:1px solid #ffffff35;border-radius:14px;padding:9px 12px;backdrop-filter:blur(8px);font-weight:700;text-shadow:0 1px 2px #000}
+  #top{position:absolute;top:12px;left:12px;right:12px;display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+  #stats{display:flex;gap:7px;flex-wrap:wrap}
+  #healthWrap{width:145px;height:12px;background:#402d35;border-radius:10px;overflow:hidden;margin-top:5px;border:1px solid #ffffff55}
+  #health{height:100%;width:100%;background:linear-gradient(90deg,#24d17c,#a6ed53)}
+  #zone{font-size:12px}
+  #help{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;width:min(90%,480px);pointer-events:auto}
+  #help h1{font-size:clamp(27px,7vw,42px);margin:0 0 6px;color:#ffe36d;text-shadow:0 3px 0 #7b4a18}
+  #help p{line-height:1.45;margin:8px 0 15px}
+  button{border:0;border-radius:13px;padding:13px 20px;background:#ffb52e;color:#271900;font-size:16px;font-weight:900;box-shadow:0 4px 0 #a45c12}
+  button:active{transform:translateY(2px);box-shadow:0 2px 0 #a45c12}
+  #mobile{position:absolute;inset:0;display:none;pointer-events:none}
+  #stickBase{position:absolute;left:22px;bottom:25px;width:124px;height:124px;border-radius:50%;background:#ffffff24;border:2px solid #ffffff55;pointer-events:auto}
+  #stick{position:absolute;left:35px;top:35px;width:50px;height:50px;border-radius:50%;background:#ffffffa8;border:2px solid white}
+  .action{position:absolute;right:22px;bottom:30px;width:78px;height:78px;border-radius:50%;padding:0;background:#ff7048;color:white;border:3px solid #ffffffa8;box-shadow:0 4px 0 #9a3529;pointer-events:auto}
+  #jump{right:110px;bottom:35px;width:58px;height:58px;background:#4ca8ff;box-shadow:0 4px 0 #205f9b;font-size:12px}
+  #hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-size:12px;white-space:nowrap;color:#fff;text-shadow:0 1px 3px #000}
+  #message{position:absolute;top:25%;left:50%;transform:translateX(-50%);font-size:22px;font-weight:900;text-align:center;text-shadow:0 2px 5px #000}
+  @media (pointer:coarse){#mobile{display:block} #hint{bottom:160px}}
+  @media (pointer:fine){#hint{bottom:12px}}
+</style>
+</head>
+<body>
+<div id="game"></div>
+<div id="hud">
+  <div id="top">
+    <div class="panel">
+      <div>❤️ <span id="hpText">100</span></div><div id="healthWrap"><div id="health"></div></div>
+    </div>
+    <div class="panel" id="stats">👥 <span id="left">9</span> restants&nbsp; · &nbsp;⭐ <span id="kills">0</span> éliminations</div>
+    <div class="panel" id="zone">🌀 Zone : <span id="timer">45</span>s</div>
+  </div>
+  <div id="message"></div>
+  <div id="help">
+    <div class="panel">
+      <h1>CHALLENGE ISLAND</h1>
+      <div style="font-weight:900;color:#9de7ff;letter-spacing:2px">BATTLE ROYALE</div>
+      <p>Survis sur l'île, récupère les bonus et sois le dernier debout !<br><b>Ordinateur :</b> ZQSD / WASD pour bouger, souris pour viser, clic pour tirer.<br><b>Mobile :</b> joystick à gauche, bouton rouge pour tirer.</p>
+      <button id="start">JOUER</button>
+    </div>
+  </div>
+  <div id="mobile">
+    <div id="stickBase"><div id="stick"></div></div>
+    <button class="action" id="fire">TIR</button>
+    <button class="action" id="jump">SAUT</button>
+  </div>
+  <div id="hint">Prototype 3D — solo contre des bots • Démo gratuite</div>
+</div>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+
+const mount=document.querySelector('#game');
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x8bd7f4);
+scene.fog=new THREE.Fog(0x8bd7f4,45,115);
+const camera=new THREE.PerspectiveCamera(68,innerWidth/innerHeight,.1,250);
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+mount.appendChild(renderer.domElement);
+scene.add(new THREE.HemisphereLight(0xdff7ff,0x557744,2.0));
+const sun=new THREE.DirectionalLight(0xfff1cf,2.2);sun.position.set(-25,45,20);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+
+const mat=(c,rough=.85)=>new THREE.MeshStandardMaterial({color:c,roughness:rough});
+const grass=mat(0x54b95b), sand=mat(0xe7d08a), trunk=mat(0x80502c), leaves=mat(0x238a55), rock=mat(0x77838d), blue=mat(0x338ee8), red=mat(0xe85b48), yellow=mat(0xffd34e), white=mat(0xf1f3f6);
+const ground=new THREE.Mesh(new THREE.CircleGeometry(58,80),grass);ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;scene.add(ground);
+const sea=new THREE.Mesh(new THREE.CircleGeometry(95,80),mat(0x2d9fce,.5));sea.rotation.x=-Math.PI/2;sea.position.y=-.65;scene.add(sea);
+const islandEdge=new THREE.Mesh(new THREE.TorusGeometry(57.5,.8,8,100),sand);islandEdge.rotation.x=Math.PI/2;islandEdge.position.y=.03;scene.add(islandEdge);
+function box(w,h,d,m,x,y,z){const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;scene.add(o);return o}
+function tree(x,z,s=1){box(.55*s,2.3*s,.55*s,trunk,x,1.15*s,z);const crown=new THREE.Mesh(new THREE.ConeGeometry(1.5*s,3*s,7),leaves);crown.position.set(x,3*s,z);crown.castShadow=true;scene.add(crown)}
+function rockObj(x,z,s){const o=new THREE.Mesh(new THREE.DodecahedronGeometry(s,0),rock);o.position.set(x,s*.55,z);o.scale.y=.7;o.castShadow=true;scene.add(o)}
+// Small village
+for(let i=0;i<6;i++){let x=(i%3-1)*12+4,z=(Math.floor(i/3)-.5)*13;box(5,3.2,5, i%2?blue:red,x,1.6,z);box(5.6,.45,5.6,yellow,x,3.35,z);box(.9,1.7,.12,white,x, .85,z+2.56)}
+for(let i=0;i<30;i++){let a=Math.random()*Math.PI*2,r=18+Math.random()*34,x=Math.cos(a)*r,z=Math.sin(a)*r;if(Math.abs(x)<14&&Math.abs(z)<14)continue;tree(x,z,.65+Math.random()*.65)}
+for(let i=0;i<18;i++){let a=Math.random()*6.28,r=12+Math.random()*39;rockObj(Math.cos(a)*r,Math.sin(a)*r,.5+Math.random()*1.1)}
+// scattered cover crates
+for(let i=0;i<12;i++){let a=i*Math.PI*2/12,r=12+Math.random()*18;box(1.4,1.3,1.4,yellow,Math.cos(a)*r,.65,Math.sin(a)*r)}
+// Safe zone ring
+const ring=new THREE.Mesh(new THREE.TorusGeometry(35,.18,8,120),new THREE.MeshBasicMaterial({color:0x5ffcff}));ring.rotation.x=Math.PI/2;ring.position.y=.2;scene.add(ring);
+const player=new THREE.Group();scene.add(player);
+const body=new THREE.Mesh(new THREE.CapsuleGeometry(.55,.8,4,8),blue);body.position.y=1.15;body.castShadow=true;player.add(body);
+const head=new THREE.Mesh(new THREE.SphereGeometry(.34,12,10),mat(0xffc99a));head.position.y=2;player.add(head);
+const gun=box(.18,.18,1.05,mat(0x343a43),0,0,0);gun.parent=player;gun.position.set(.48,1.35,-.62); // box helper adds to scene; remove duplicate scene parent
+scene.remove(gun);player.add(gun);
+player.position.set(0,0,0);
+
+const bots=[];
+function makeBot(i){const g=new THREE.Group();const color=[0xe45c4e,0x9b68d8,0xe7a936,0x36a9a0][i%4];const b=new THREE.Mesh(new THREE.CapsuleGeometry(.52,.8,4,8),mat(color));b.position.y=1.12;b.castShadow=true;g.add(b);const h=new THREE.Mesh(new THREE.SphereGeometry(.32,12,10),mat(0xffc99a));h.position.y=1.95;g.add(h);g.position.set((Math.random()-.5)*72,0,(Math.random()-.5)*72);g.userData={hp:100,alive:true,cool:1+Math.random()*2,dir:new THREE.Vector3(),speed:2.2+Math.random()*1.1};scene.add(g);bots.push(g)}
+for(let i=0;i<9;i++)makeBot(i);
+
+const pickups=[];
+for(let i=0;i<10;i++){const p=new THREE.Mesh(new THREE.IcosahedronGeometry(.55,0),new THREE.MeshStandardMaterial({color:0x42f0a4,emissive:0x087b42}));let a=Math.random()*6.28,r=5+Math.random()*35;p.position.set(Math.cos(a)*r,.8,Math.sin(a)*r);scene.add(p);pickups.push(p)}
+let hp=100,kills=0,started=false,ended=false,zoneRadius=35,zoneTime=45,fireHeld=false,lastShot=0,velocityY=0,onGround=true;
+const keys={};let yaw=0,moveX=0,moveY=0;
+const hpText=document.querySelector('#hpText'),health=document.querySelector('#health'),left=document.querySelector('#left'),killText=document.querySelector('#kills'),timer=document.querySelector('#timer'),msg=document.querySelector('#message'),help=document.querySelector('#help');
+function updateHud(){hpText.textContent=Math.max(0,Math.ceil(hp));health.style.width=Math.max(0,hp)+'%';left.textContent=bots.filter(b=>b.userData.alive).length+(hp>0?1:0);killText.textContent=kills;timer.textContent=Math.ceil(zoneTime)}
+function shoot(){if(!started||ended)return;const now=performance.now();if(now-lastShot<260)return;lastShot=now;
+ const origin=player.position.clone().add(new THREE.Vector3(0,1.35,0));const dir=new THREE.Vector3(Math.sin(yaw),0,-Math.cos(yaw));
+ let target=null,best=22;
+ for(const b of bots){if(!b.userData.alive)continue;const v=b.position.clone().sub(origin);const dist=v.length();v.y=0;const dot=v.normalize().dot(dir);if(dot>.965&&dist<best){best=dist;target=b}}
+ if(target){target.userData.hp-=34;target.children[0].material=mat(0xffffff);setTimeout(()=>{if(target.userData.alive)target.children[0].material=mat(0xe45c4e)},90);if(target.userData.hp<=0){target.userData.alive=false;scene.remove(target);kills++;msg.textContent='BOT ÉLIMINÉ !';setTimeout(()=>msg.textContent='',900)}}
+}
+function damage(n){hp-=n;if(hp<=0){hp=0;finish(false)}}
+function finish(win){ended=true;msg.textContent=win?'🏆 VICTOIRE ROYALE !':'💥 ÉLIMINÉ !';help.style.display='block';help.querySelector('h1').textContent=win?'VICTOIRE !':'PARTIE TERMINÉE';help.querySelector('p').innerHTML=`Éliminations : <b>${kills}</b><br>Appuie pour rejouer.`;document.querySelector('#start').textContent='REJOUER';}
+function start(){if(ended){location.reload();return}started=true;help.style.display='none';msg.textContent='';}
+document.querySelector('#start').addEventListener('click',start);
+document.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true;if(e.key===' ')jump()});
+document.addEventListener('keyup',e=>keys[e.key.toLowerCase()]=false);
+renderer.domElement.addEventListener('click',()=>{if(started&&matchMedia('(pointer:fine)').matches)shoot()});
+document.addEventListener('mousemove',e=>{if(started&&matchMedia('(pointer:fine)').matches&&document.pointerLockElement===renderer.domElement)yaw-=e.movementX*.003});
+renderer.domElement.addEventListener('click',()=>{if(started&&matchMedia('(pointer:fine)').matches)renderer.domElement.requestPointerLock?.()});
+function jump(){if(onGround){velocityY=7;onGround=false}}
+document.querySelector('#fire').addEventListener('touchstart',e=>{e.preventDefault();fireHeld=true;shoot()},{passive:false});
+['touchend','touchcancel','mouseup'].forEach(ev=>document.querySelector('#fire').addEventListener(ev,()=>fireHeld=false));
+document.querySelector('#fire').addEventListener('click',()=>shoot());
+document.querySelector('#jump').addEventListener('click',jump);
+const base=document.querySelector('#stickBase'),stick=document.querySelector('#stick');let stickId=null;
+base.addEventListener('touchstart',e=>{e.preventDefault();stickId=e.changedTouches[0].identifier;stickMove(e.changedTouches[0])},{passive:false});
+base.addEventListener('touchmove',e=>{for(const t of e.changedTouches)if(t.identifier===stickId)stickMove(t)},{passive:false});
+function stickMove(t){const r=base.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;let dx=t.clientX-cx,dy=t.clientY-cy,l=Math.hypot(dx,dy),max=43;if(l>max){dx=dx/l*max;dy=dy/l*max}stick.style.transform=`translate(${dx}px,${dy}px)`;moveX=dx/max;moveY=dy/max}
+function resetStick(){stickId=null;moveX=moveY=0;stick.style.transform='translate(0,0)'}
+base.addEventListener('touchend',e=>{for(const t of e.changedTouches)if(t.identifier===stickId)resetStick()});
+base.addEventListener('touchcancel',resetStick);
+let last=performance.now();
+function loop(now){requestAnimationFrame(loop);const dt=Math.min((now-last)/1000,.04);last=now;
+ if(started&&!ended){
+  let mx=moveX+(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0),mz=moveY+(keys.s||keys.arrowdown?1:0)-(keys.w||keys.z||keys.arrowup?1:0);
+  if(matchMedia('(pointer:fine)').matches){if(keys.q)mx=-1;if(keys.d)mx=1;if(keys.z||keys.w)mz=-1;if(keys.s)mz=1}
+  const len=Math.hypot(mx,mz);if(len>1){mx/=len;mz/=len}
+  const forward=new THREE.Vector3(Math.sin(yaw),0,-Math.cos(yaw)),right=new THREE.Vector3(Math.cos(yaw),0,Math.sin(yaw));
+  player.position.addScaledVector(right,mx*7*dt);player.position.addScaledVector(forward,-mz*7*dt);
+  player.position.x=THREE.MathUtils.clamp(player.position.x,-53,53);player.position.z=THREE.MathUtils.clamp(player.position.z,-53,53);
+  player.rotation.y=yaw;
+  velocityY-=18*dt;player.position.y+=velocityY*dt;if(player.position.y<=0){player.position.y=0;velocityY=0;onGround=true}
+  if(fireHeld)shoot();
+  for(const b of bots){if(!b.userData.alive)continue;const v=player.position.clone().sub(b.position);v.y=0;const d=v.length();if(d>2.2){v.normalize();b.position.addScaledVector(v,b.userData.speed*dt);b.rotation.y=Math.atan2(v.x,v.z)}b.userData.cool-=dt;if(d<18&&b.userData.cool<=0){b.userData.cool=1.6+Math.random()*1.5;if(Math.random()>.28)damage(5)}}
+  for(const p of pickups){if(p.visible){p.rotation.y+=dt*1.8;p.position.y=.8+Math.sin(now*.003+p.position.x)*.18;if(p.position.distanceTo(player.position)<1.8){hp=Math.min(100,hp+25);p.visible=false;msg.textContent='+25 VIE';setTimeout(()=>msg.textContent='',700)}}}
+  zoneTime-=dt;if(zoneTime<=0){zoneTime=0;zoneRadius=Math.max(9,zoneRadius-4);ring.geometry.dispose();ring.geometry=new THREE.TorusGeometry(zoneRadius,.18,8,120);zoneTime=25;msg.textContent='LA ZONE RÉTRÉCIT !';setTimeout(()=>msg.textContent='',1200)}
+  if(Math.hypot(player.position.x,player.position.z)>zoneRadius)damage(5*dt);
+  const alive=bots.filter(b=>b.userData.alive).length;if(alive===0)finish(true);
+  updateHud();
+ }
+ const camOffset=new THREE.Vector3(Math.sin(yaw)*7,5.1,Math.cos(yaw)*7);const desired=player.position.clone().add(camOffset);camera.position.lerp(desired,.12);camera.lookAt(player.position.x,player.position.y+1.25,player.position.z);
+ renderer.render(scene,camera);
+}
+requestAnimationFrame(loop);
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+updateHud();
+</script>
+</body>
+</html>
